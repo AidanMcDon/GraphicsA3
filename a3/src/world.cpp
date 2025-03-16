@@ -193,14 +193,25 @@ void World::integrate( State *yStart, State *yEnd, float deltaT, bool &collision
   // Set the angular velocity derivative to zero.
 
   // [YOUR CODE HERE]
-
+  for (int i = 0; i < nSpheres; i++) {
+    y[i] = yStart[i];           // Copy initial state
+    yDeriv[i].x = yStart[i].v;  // dx/dt = velocity
+    yDeriv[i].v = GRAVITY_ACCEL; // dv/dt = acceleration (gravity)
+    yDeriv[i].q = quaternion(0, vec3(0,0,0));  // No angular velocity change
+    yDeriv[i].w = vec3(0, 0, 0); // No angular acceleration
+  }
   // Integrate: Compute yEnd = yStart + deltaT * yDeriv
   //
   // Do this on the individual floats in 'y' and 'yDeriv'.  Do not
   // refer to the sphere states here.
 
   // [YOUR CODE HERE]
-
+  for (int i = 0; i < nSpheres; i++) {
+    yEnd[i].x = yStart[i].x + deltaT * yDeriv[i].x;  // Update position
+    yEnd[i].v = yStart[i].v + deltaT * yDeriv[i].v;  // Update velocity
+    yEnd[i].q = yStart[i].q + deltaT * yDeriv[i].q;  // Update orientation
+    yEnd[i].w = yStart[i].w + deltaT * yDeriv[i].w;  // Update angular velocity
+  }
   // Copy yEnd state into sphere states
 
 
@@ -348,7 +359,18 @@ float World::updateStateByDeltaT( float deltaT )
 
 
     // [YOUR CODE HERE]
-    
+    float lower = 0, upper = deltaT, mid;
+    while (upper - lower > MIN_DELTA_T_FOR_COLLISIONS) {
+      mid = (lower + upper) / 2.0f;
+      integrate(yStart, yEnd, mid, collisionAtEnd, &collisionSphere, &collisionObject);
+      if (collisionAtEnd)
+        upper = mid;
+      else {
+        lower = mid;
+        copyState(yEnd, yStart);
+      }
+    }
+    actualDeltaT = lower;
 
     // Set the sphere states to that at the START of the interval so
     // that collision has not yet occurred.  Since the objects DO NOT
