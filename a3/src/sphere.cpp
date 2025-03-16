@@ -37,12 +37,12 @@ float Sphere::distToRectangle( Rectangle &rectangle, vec3 *closestPoint )
   // find the closestPoint and the distance.
 
   // [YOUR CODE HERE: REPLACE THE CODE BELOW]
-
-  if ( true ) { 
-
-    *closestPoint = vec3(1,1,0);
-      
-    return 9999;
+  float xDim = rectangle.xDim/2;
+  float yDim = rectangle.yDim/2;
+  if (sphereCentre.x >= -xDim && sphereCentre.x <= xDim && sphereCentre.y >= -yDim && sphereCentre.y <= yDim) { 
+    *closestPoint = vec3(sphereCentre.x, sphereCentre.y, 0);
+    float distance = fabs(sphereCentre.z) - this->radius;
+    return std::max(0.0f, distance);
   }
 
   // [END OF YOUR CODE ABOVE]
@@ -62,7 +62,10 @@ float Sphere::distToRectangle( Rectangle &rectangle, vec3 *closestPoint )
 
 
   // [YOUR CODE HERE]
-
+  distXplus = pointToEdgeDistance(sphereCentre, vec3(xDim, -yDim, 0), vec3(xDim, yDim, 0), &pointXplus);
+  distXminus = pointToEdgeDistance(sphereCentre, vec3(-xDim, -yDim, 0), vec3(-xDim, yDim, 0), &pointXminus);
+  distYplus = pointToEdgeDistance(sphereCentre, vec3(-xDim, yDim, 0), vec3(xDim, yDim, 0), &pointYplus);
+  distYminus = pointToEdgeDistance(sphereCentre, vec3(-xDim, -yDim, 0), vec3(xDim, -yDim, 0), &pointYminus);
   
   // Pick the minimum of the edge distances
   
@@ -90,9 +93,9 @@ float Sphere::distToRectangle( Rectangle &rectangle, vec3 *closestPoint )
   
  // [YOUR CODE HERE: REPLACE THE CODE BELOW]
 
-  *closestPoint = vec3(0,0,0); 
-  
-  return 9999;
+  *closestPoint = (rectangle.OCS_to_WCS() * vec4(pt, 1.0)).toVec3();
+
+  return std::max(0.0f, min - this->radius);
 }
 
 
