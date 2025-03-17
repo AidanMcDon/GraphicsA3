@@ -209,7 +209,7 @@ void World::integrate( State *yStart, State *yEnd, float deltaT, bool &collision
   for (int i = 0; i < nSpheres; i++) {
     yEnd[i].x = yStart[i].x + deltaT * yDeriv[i].x;  // Update position
     yEnd[i].v = yStart[i].v + deltaT * yDeriv[i].v;  // Update velocity
-    yEnd[i].q = yStart[i].q + deltaT * yDeriv[i].q;  // Update orientation
+    yEnd[i].q = yStart[i].q * quaternion(1, 0.5f * deltaT * yDeriv[i].w);  // Update orientation
     yEnd[i].w = yStart[i].w + deltaT * yDeriv[i].w;  // Update angular velocity
   }
   // Copy yEnd state into sphere states
