@@ -867,7 +867,21 @@ float pointToEdgeDistance( vec3 point, vec3 edgeTail, vec3 edgeHead, vec3 *close
   // [YOUR CODE HERE: REPLACE THE CODE BELOW]
   
   *closestPoint = vec3(0,0,0);
+  float distAlongPoint = ((point - edgeHead) * (edgeTail - edgeHead)) /
+      ((edgeTail - edgeHead) * (edgeTail - edgeHead));
+
+  //vec3 closestPoint = vec3(0, 0, 0);
+  if (distAlongPoint <= 0) {
+      *closestPoint = edgeHead;
+  }
+  else if (distAlongPoint >= 1) {
+      *closestPoint = edgeTail;
+  }
+  else {
+      *closestPoint = (distAlongPoint * (edgeTail - edgeHead)) + edgeHead;
+  }
+
   
-  return 9999;
+  return (point - *closestPoint).length();
 }
 
