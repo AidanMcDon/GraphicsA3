@@ -40,7 +40,8 @@ float Sphere::distToRectangle( Rectangle &rectangle, vec3 *closestPoint )
   float xDim = rectangle.xDim/2;
   float yDim = rectangle.yDim/2;
   if (sphereCentre.x >= -xDim && sphereCentre.x <= xDim && sphereCentre.y >= -yDim && sphereCentre.y <= yDim) { 
-    *closestPoint = vec3(sphereCentre.x, sphereCentre.y, 0);
+    vec3 localClosestPoint = vec3(sphereCentre.x, sphereCentre.y, 0);
+    *closestPoint = (rectangle.OCS_to_WCS() * vec4(localClosestPoint, 1.0)).toVec3();
     float distance = fabs(sphereCentre.z) - this->radius;
     return std::max(0.0f, distance);
   }
